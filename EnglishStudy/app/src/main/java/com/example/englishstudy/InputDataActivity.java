@@ -8,11 +8,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import static com.example.englishstudy.MainActivity.RESULT_CANCEL;
+
 public class InputDataActivity extends AppCompatActivity {
     private EditText et_question;
     private EditText et_answer;
     private Button btn_input;
     private Button btn_cancel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +40,12 @@ public class InputDataActivity extends AppCompatActivity {
                     String question = et_question.getText().toString();
                     String answer = et_answer.getText().toString();
 
-                    Intent intent = getIntent();
+                    Intent intent = new Intent();
 
                     intent.putExtra("question1", question);
                     intent.putExtra("answer1", answer);
+                    setResult(1, intent);
+                    finish();
                 }
             }
         });
@@ -48,7 +53,8 @@ public class InputDataActivity extends AppCompatActivity {
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                setResult(RESULT_CANCEL);
+                finish();
             }
         });
     }

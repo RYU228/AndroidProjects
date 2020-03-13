@@ -1,6 +1,7 @@
 package com.example.englishstudy;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -14,6 +15,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_eng;
     private Button btn_main_input;
     private Intent intent;
+    private String origin;
+    final static int REQUEST_INTENT = 0;
+    final static int RESULT_OK = 1;
+    final static int RESULT_CANCEL = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,10 +27,12 @@ public class MainActivity extends AppCompatActivity {
 
         tv_eng = (TextView)findViewById(R.id.tv_eng);
 
+        origin = tv_eng.getText().toString();
+
         tv_eng.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                String str = tv_eng.getText().toString();
+
                 int action = motionEvent.getAction();
 
                 if(MotionEvent.ACTION_DOWN == action)
@@ -33,26 +40,32 @@ public class MainActivity extends AppCompatActivity {
                     tv_eng.setText("영어문장");
                 }else if(MotionEvent.ACTION_UP == action)
                 {
-                    tv_eng.setText(str);
+                    tv_eng.setText(origin);
                 }
 
                 return true;
             }
         });
 
-        intent = new Intent(MainActivity.this, InputDataActivity.class);
-        String data1 = intent.getStringExtra("question");
-        intent.getStringExtra("answer");
-        tv_eng.setText(data1);
-
-
         btn_main_input = (Button)findViewById(R.id.btn_main_input);
 
         btn_main_input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(intent);
+                intent = new Intent(MainActivity.this, InputDataActivity.class);
+                //intent.putExtra("question")
+                startActivityForResult(intent, REQUEST_INTENT);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == REQUEST_INTENT && resultCode == RESULT_OK)
+        {
+            String str = data.getStringExtra("question1");
+            tv_eng.setText(str);
+            origin = tv_eng.getText().toString();
+        }
     }
 }
