@@ -31,11 +31,15 @@ public class InputDataActivity extends AppCompatActivity {
         btn_input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(et_question.getText().toString() == "" || et_answer.getText().toString() == "")
-                {
-                    Toast.makeText(getApplicationContext(), "문제와 정답을 입력해주세요.", Toast.LENGTH_SHORT).show();
-                }
-                else
+                String temp = et_question.getText().toString();
+                String temp2 = et_answer.getText().toString();
+                boolean con1 = false;
+                boolean con2 = false;
+
+                if(temp.length != 0 && temp2.length != 0) con1 = true;
+                if(temp != " " && temp2 != " ") con2 = true;
+
+                if(con1 && con2)
                 {
                     String question = et_question.getText().toString();
                     String answer = et_answer.getText().toString();
@@ -46,6 +50,10 @@ public class InputDataActivity extends AppCompatActivity {
                     intent.putExtra("answer1", answer);
                     setResult(1, intent);
                     finish();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "문제와 정답을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
