@@ -1,12 +1,18 @@
 package com.example.englishstudy;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 
 import static com.example.englishstudy.MainActivity.RESULT_CANCEL;
 
@@ -17,6 +23,7 @@ public class InputDataActivity extends AppCompatActivity {
     private Button btn_cancel;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +31,11 @@ public class InputDataActivity extends AppCompatActivity {
 
         et_question = (EditText)findViewById(R.id.et_question);
         et_answer = (EditText)findViewById(R.id.et_answer);
+
+        et_question.requestFocus();
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
         btn_input = (Button)findViewById(R.id.btn_input);
         btn_cancel = (Button)findViewById(R.id.btn_cancel);
@@ -36,13 +48,37 @@ public class InputDataActivity extends AppCompatActivity {
                 boolean con1 = false;
                 boolean con2 = false;
 
-                if(temp.length != 0 && temp2.length != 0) con1 = true;
+                if(temp.length() != 0 && temp2.length() != 0) con1 = true;
                 if(temp != " " && temp2 != " ") con2 = true;
 
                 if(con1 && con2)
                 {
                     String question = et_question.getText().toString();
                     String answer = et_answer.getText().toString();
+
+                    String filename = "QnA.txt";
+                    File file = new File(getFilesDir(), filename);
+                    FileWriter fw = null;
+                    BufferedWriter bufwr = null;
+
+                    try
+                    {
+                        fw = new FileWriter(file, true);
+                        bufwr = new BufferedWriter(fw);
+                        bufwr.write(question);
+                        bufwr.newLine();
+                        bufwr.write(answer);
+                        bufwr.newLine();
+
+                        if(bufwr != null)
+                            bufwr.close();
+                        if(fw != null)
+                            fw.close();
+                    } catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
 
                     Intent intent = new Intent();
 
