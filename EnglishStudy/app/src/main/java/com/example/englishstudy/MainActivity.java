@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        //조회 버튼
         btn_main_search = (Button)findViewById(R.id.btn_main_search);
 
         btn_main_search.setOnClickListener(new View.OnClickListener() {
