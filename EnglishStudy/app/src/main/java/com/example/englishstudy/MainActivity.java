@@ -9,12 +9,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,44 +31,45 @@ public class MainActivity extends AppCompatActivity {
     final static int REQUEST_INTENT = 0;
     final static int RESULT_OK = 1;
     final static int RESULT_CANCEL = 2;
-    private String question[];
-    private String answer[];
     private int readcount = 0;
     private int curcount = 0;
+    private ArrayList<QnA> qna;
+
+    public MainActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        question = new String[20];
-        answer = new String[20];
+        qna = new ArrayList<>();
 
         File init_file = new File(getFilesDir(), "DataCount.txt");
         File data_file = new File(getFilesDir(), "QnA.txt");
 
-        if(data_file.exists())
-        {
-            //data_file.delete();
-            DataRead();
-        }
-
-
-        if(init_file.exists())
-        {
-            //init_file.delete();
-            CountRead();
-        }
+//        if(data_file.exists())
+//        {
+//            //data_file.delete();
+//            DataRead();
+//        }
+//
+//
+//        if(init_file.exists())
+//        {
+//            //init_file.delete();
+//            CountRead();
+//        }
 
         tv_eng = (TextView)findViewById(R.id.tv_eng);
 
-        if(question[0] == null)
+        if(qna.size() == 0)
         {
             tv_eng.setText("문제를 입력해주세요.");
         }
         else
         {
-            tv_eng.setText(question[0]);
+            tv_eng.setText(qna.get(0).getQuestion());
         }
 
         tv_eng.setOnTouchListener(new View.OnTouchListener() {
@@ -74,10 +80,10 @@ public class MainActivity extends AppCompatActivity {
 
                 if(MotionEvent.ACTION_DOWN == action)
                 {
-                    tv_eng.setText(answer[curcount]);
+                    tv_eng.setText(qna.get(curcount).getAnswer());
                 }else if(MotionEvent.ACTION_UP == action)
                 {
-                    tv_eng.setText(question[curcount]);
+                    tv_eng.setText(qna.get(curcount).getQuestion());
                 }
 
                 return true;
@@ -104,24 +110,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                intent.putExtra("questionarray", question);
-                intent.putExtra("answerarray", answer);
+                intent.putExtra("QnA", qna);
                 intent.putExtra("readcount", readcount);
-                startActivity(intent);
-                /*File init_file = new File(getFilesDir(), "DataCount.txt");
-                File data_file = new File(getFilesDir(), "QnA.txt");
-
-                if(data_file.exists())
-                {
-                    data_file.delete();
-                }
-
-
-                if(init_file.exists())
-                {
-                    init_file.delete();
-                }
-                readcount = 0;*/
+                startActivityForResult(intent, REQUEST_INTENT);
+                //startActivity(intent);
             }
         });
 
@@ -131,25 +123,11 @@ public class MainActivity extends AppCompatActivity {
         btn_main_pre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File init_file = new File(getFilesDir(), "DataCount.txt");
-                File data_file = new File(getFilesDir(), "QnA.txt");
-
-                if(data_file.exists())
-                {
-                    data_file.delete();
-                }
-
-
-                if(init_file.exists())
-                {
-                    init_file.delete();
-                }
-                readcount = 0;
-                /*if(curcount < 1)
+                if(curcount < 1)
                     curcount = 0;
                 else
                     curcount--;
-                tv_eng.setText(question[curcount]);*/
+                tv_eng.setText(qna.get(curcount).getQuestion());
             }
         });
         btn_main_next.setOnClickListener(new View.OnClickListener() {
@@ -159,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     curcount = readcount;
                 else
                     curcount++;
-                tv_eng.setText(question[curcount]);
+                tv_eng.setText(qna.get(curcount).getQuestion());
             }
         });
     }
@@ -168,45 +146,57 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_INTENT && resultCode == RESULT_OK)
         {
-            question[readcount] = data.getStringExtra("question1");
-            answer[readcount] = data.getStringExtra("answer1");
-            readcount++;
-            //tv_eng.setText(question[0]);
+            qna = (ArrayList<QnA>)intent.getSerializableExtra("QnA");
+            readcount = intent.getIntExtra("readcount", 1);
         }
     }
 
     public void DataRead()
     {
         File file = new File(getFilesDir(), "QnA.txt");
-        FileReader fr = null;
-        BufferedReader bufrd = null;
 
         try
         {
-            fr = new FileReader(file);
-            bufrd = new BufferedReader(fr);
-
-            for(int i = 0; ; i++)
-            {
-                question[i] = bufrd.readLine();
-                answer[i] = bufrd.readLine();
-
-                if(question[i] == null || answer[i] == null)
-                {
-                    question[i] = null;
-                    answer[i] = null;
-
-                    readcount = i;
-                    break;
-                }
-            }
-
-            if(bufrd != null) bufrd.close();
-            if(fr != null) fr.close();
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            ArrayList readedObject = (ArrayList)ois.readObject();
+            qna = readedObject;
+            ois.close();
+            fis.close();
         } catch (Exception e)
         {
             e.printStackTrace();
         }
+//        File file = new File(getFilesDir(), "QnA.txt");
+//        FileReader fr = null;
+//        BufferedReader bufrd = null;
+//
+//        try
+//        {
+//            fr = new FileReader(file);
+//            bufrd = new BufferedReader(fr);
+//
+//            for(int i = 0; ; i++)
+//            {
+//                question[i] = bufrd.readLine();
+//                answer[i] = bufrd.readLine();
+//
+//                if(question[i] == null || answer[i] == null)
+//                {
+//                    question[i] = null;
+//                    answer[i] = null;
+//
+//                    readcount = i;
+//                    break;
+//                }
+//            }
+//
+//            if(bufrd != null) bufrd.close();
+//            if(fr != null) fr.close();
+//        } catch (Exception e)
+//        {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

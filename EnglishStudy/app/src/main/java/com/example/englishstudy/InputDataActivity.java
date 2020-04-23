@@ -23,6 +23,18 @@ public class InputDataActivity extends AppCompatActivity {
     private Button btn_cancel;
 
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent intent = new Intent();
+
+//        intent.putExtra("question1", question);
+//        intent.putExtra("answer1", answer);
+        intent.putExtra("readcount1", 11);
+        setResult(1, intent);
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +96,7 @@ public class InputDataActivity extends AppCompatActivity {
 
                     intent.putExtra("question1", question);
                     intent.putExtra("answer1", answer);
+                    intent.putExtra("readcount1", 11);
                     setResult(1, intent);
                     finish();
                 }

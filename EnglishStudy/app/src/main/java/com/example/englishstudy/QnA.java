@@ -2,7 +2,9 @@ package com.example.englishstudy;
 
 import android.widget.CheckBox;
 
-public class QnA {
+import java.io.Serializable;
+
+public class QnA implements Serializable {
     private String question;
     private String answer;
     private CheckBox checkBox;

@@ -1,5 +1,6 @@
 package com.example.englishstudy;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
@@ -11,7 +12,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,16 +31,56 @@ public class SearchActivity extends AppCompatActivity {
     private String question[];
     private String answer[];
     private Button btn_input, btn_change, btn_delete;
-    private ArrayList<QnA> arrayList;
+    private ArrayList<QnA> qna;
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        Intent intent = new Intent();
+
+        intent.putExtra("QnA", qna);
+//        intent.putExtra("question1", question);
+//        intent.putExtra("answer1", answer);
+        intent.putExtra("readcount1", 10);
+        setResult(1, intent);
+        finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        Intent intent = new Intent();
+//
+//        intent.putExtra("question1", question);
+//        intent.putExtra("answer1", answer);
+//        intent.putExtra("readcount1", 10);
+//        setResult(1, intent);
+//        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        Intent intent = new Intent();
+//
+//        intent.putExtra("question1", question);
+//        intent.putExtra("answer1", answer);
+//        intent.putExtra("readcount1", 10);
+//        setResult(1, intent);
+//        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        qna = new ArrayList();
+
         Intent intent = getIntent();
-        question = intent.getStringArrayExtra("questionarray");
-        answer = intent.getStringArrayExtra("answerarray");
+        //qna = (ArrayList<QnA>)intent.getSerializableExtra("QnA");
+//        question = intent.getStringArrayExtra("questionarray");
+//        answer = intent.getStringArrayExtra("answerarray");
         readcount = intent.getIntExtra("readcount", 1);
 
         final ListView listView = (ListView) findViewById(R.id.lv_search);
@@ -40,14 +90,10 @@ public class SearchActivity extends AppCompatActivity {
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_singlechoice, arrayList);
         listView.setAdapter(adapter);*/
 
-        final List<QnA> qna = new ArrayList<>();
+        //final List<QnA> qna = new ArrayList<>();
 
-        for(int i = 0; i<readcount; i++)
-            qna.add(new QnA(question[i], answer[i], null));
-        /*qna.add(new QnA("1번문", "1번답", null));
-        qna.add(new QnA("2번문", "2번답", null));
-        qna.add(new QnA("3번문", "3번답", null));
-        qna.add(new QnA("4번문", "4번답", null));*/
+//        for(int i = 0; i<readcount; i++)
+//            qna.add(new QnA(question[i], answer[i], null));
 
         final ListAdapter listAdapter = new ListAdapter(this, qna, listView);
 
@@ -85,10 +131,59 @@ public class SearchActivity extends AppCompatActivity {
                         //String result = et.getText().toString();
                         String str1 = et_question.getText().toString();
                         String str2 = et_answer.getText().toString();
-                        if(!str1.isEmpty())
+
+                        if(!str1.isEmpty() && !str2.isEmpty())
                         {
                             qna.add(new QnA(str1, str2, null));
                             listAdapter.notifyDataSetChanged();
+
+                            try
+                            {
+                                String filename = "QnA.txt";
+                                File file = new File(getFilesDir(), filename);
+                                FileOutputStream fos = new FileOutputStream(file);
+                                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                                oos.writeObject(qna);
+                                oos.close();
+                                fos.close();
+                            } catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+//                            String filename = "QnA.txt";
+//                            File file = new File(getFilesDir(), filename);
+//                            FileWriter fw = null;
+//                            BufferedWriter bufwr = null;
+//
+//                            try
+//                            {
+//                                fw = new FileWriter(file, true);
+//                                bufwr = new BufferedWriter(fw);
+//                                bufwr.write(str1);
+//                                bufwr.newLine();
+//                                bufwr.write(str2);
+//                                bufwr.newLine();
+//
+//                                if(bufwr != null)
+//                                    bufwr.close();
+//                                if(fw != null)
+//                                    fw.close();
+//                            } catch(Exception e)
+//                            {
+//                                e.printStackTrace();
+//                            }
+
+                            readcount++;
+                            File init_file = new File(getFilesDir(), "DataCount.txt");
+                            if(init_file.exists())
+                            {
+                                init_file.delete();
+                                CountWrite();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "문제와 정답을 입력해주세요.", Toast.LENGTH_SHORT).show();
                         }
                         dialogInterface.dismiss();
                     }
@@ -108,14 +203,71 @@ public class SearchActivity extends AppCompatActivity {
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int pos = listView.getCheckedItemPosition();
-                if(pos != ListView.INVALID_POSITION)
+//                int pos = listView.getCheckedItemPosition();
+//                if(pos != ListView.INVALID_POSITION)
+//                {
+//                    qna.remove(pos);
+//                    listView.clearChoices();
+//                    listAdapter.notifyDataSetChanged();
+//                }
+//                File init_file = new File(getFilesDir(), "DataCount.txt");
+//                File data_file = new File(getFilesDir(), "QnA.txt");
+//
+//                if(data_file.exists())
+//                {
+//                    data_file.delete();
+//                }
+//
+//                if(init_file.exists())
+//                {
+//                    init_file.delete();
+//                }
+//                qna.clear();
+                qna.clear();
+
+
+                FileInputStream fis = null;
+                ObjectInputStream ois = null;
+                File file = new File(getFilesDir(), "QnA.txt");
+                ArrayList qna2;
+
+                try
                 {
-                    qna.remove(pos);
-                    listView.clearChoices();
-                    listAdapter.notifyDataSetChanged();
+                    fis = new FileInputStream(file);
+                    ois = new ObjectInputStream(fis);
+                    qna = (ArrayList)ois.readObject();
+                    //qna = readedObject;
+                    ois.close();
+                    fis.close();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
                 }
             }
         });
+    }
+
+    public void CountWrite()
+    {
+        File file = null;
+        String filename = "DataCount.txt";
+        FileWriter fw = null;
+        BufferedWriter bufwr = null;
+
+        file = new File(getFilesDir(), filename);
+
+        try
+        {
+            fw = new FileWriter(file);
+            bufwr = new BufferedWriter(fw);
+            String str = Integer.toString(readcount);
+            bufwr.write(str);
+
+            if(bufwr != null) bufwr.close();
+            if(fw != null) fw.close();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
