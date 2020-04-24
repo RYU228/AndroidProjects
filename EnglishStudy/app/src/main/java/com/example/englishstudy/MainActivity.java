@@ -43,23 +43,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        qna = new ArrayList<>();
+        qna = new ArrayList();
 
         File init_file = new File(getFilesDir(), "DataCount.txt");
         File data_file = new File(getFilesDir(), "QnA.txt");
 
-//        if(data_file.exists())
-//        {
-//            //data_file.delete();
-//            DataRead();
-//        }
-//
-//
-//        if(init_file.exists())
-//        {
-//            //init_file.delete();
-//            CountRead();
-//        }
+        if(data_file.exists())
+        {
+            //data_file.delete();
+            DataRead();
+        }
+
+
+        if(init_file.exists())
+        {
+            //init_file.delete();
+            CountRead();
+        }
 
         tv_eng = (TextView)findViewById(R.id.tv_eng);
 
@@ -133,8 +133,8 @@ public class MainActivity extends AppCompatActivity {
         btn_main_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(curcount >= readcount)
-                    curcount = readcount;
+                if(curcount >= readcount-1)
+                    curcount = readcount-1;
                 else
                     curcount++;
                 tv_eng.setText(qna.get(curcount).getQuestion());
@@ -146,57 +146,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_INTENT && resultCode == RESULT_OK)
         {
-            qna = (ArrayList<QnA>)intent.getSerializableExtra("QnA");
-            readcount = intent.getIntExtra("readcount", 1);
+            qna.clear();
+            qna = (ArrayList<QnA>)data.getSerializableExtra("QnA2");
+            readcount = data.getIntExtra("readcount1", 1);
+
+            String temp = Integer.toString(readcount);
+            btn_main_next.setText(temp);
         }
     }
 
     public void DataRead()
     {
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
         File file = new File(getFilesDir(), "QnA.txt");
+        ArrayList qna2;
 
         try
         {
-            FileInputStream fis = new FileInputStream(file);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList readedObject = (ArrayList)ois.readObject();
-            qna = readedObject;
+            fis = new FileInputStream(file);
+            ois = new ObjectInputStream(fis);
+            qna = (ArrayList)ois.readObject();
             ois.close();
             fis.close();
         } catch (Exception e)
         {
             e.printStackTrace();
         }
-//        File file = new File(getFilesDir(), "QnA.txt");
-//        FileReader fr = null;
-//        BufferedReader bufrd = null;
-//
-//        try
-//        {
-//            fr = new FileReader(file);
-//            bufrd = new BufferedReader(fr);
-//
-//            for(int i = 0; ; i++)
-//            {
-//                question[i] = bufrd.readLine();
-//                answer[i] = bufrd.readLine();
-//
-//                if(question[i] == null || answer[i] == null)
-//                {
-//                    question[i] = null;
-//                    answer[i] = null;
-//
-//                    readcount = i;
-//                    break;
-//                }
-//            }
-//
-//            if(bufrd != null) bufrd.close();
-//            if(fr != null) fr.close();
-//        } catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
     }
 
     @Override

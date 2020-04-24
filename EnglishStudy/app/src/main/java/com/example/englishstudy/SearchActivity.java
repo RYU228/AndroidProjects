@@ -38,10 +38,8 @@ public class SearchActivity extends AppCompatActivity {
         //super.onBackPressed();
         Intent intent = new Intent();
 
-        intent.putExtra("QnA", qna);
-//        intent.putExtra("question1", question);
-//        intent.putExtra("answer1", answer);
-        intent.putExtra("readcount1", 10);
+        intent.putExtra("QnA2", qna);
+        intent.putExtra("readcount1", readcount);
         setResult(1, intent);
         finish();
     }
@@ -49,25 +47,11 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-//        Intent intent = new Intent();
-//
-//        intent.putExtra("question1", question);
-//        intent.putExtra("answer1", answer);
-//        intent.putExtra("readcount1", 10);
-//        setResult(1, intent);
-//        finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        Intent intent = new Intent();
-//
-//        intent.putExtra("question1", question);
-//        intent.putExtra("answer1", answer);
-//        intent.putExtra("readcount1", 10);
-//        setResult(1, intent);
-//        finish();
     }
 
     @Override
@@ -76,11 +60,10 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         qna = new ArrayList();
+        qna.clear();
 
         Intent intent = getIntent();
-        //qna = (ArrayList<QnA>)intent.getSerializableExtra("QnA");
-//        question = intent.getStringArrayExtra("questionarray");
-//        answer = intent.getStringArrayExtra("answerarray");
+        qna = (ArrayList<QnA>)intent.getSerializableExtra("QnA");
         readcount = intent.getIntExtra("readcount", 1);
 
         final ListView listView = (ListView) findViewById(R.id.lv_search);
@@ -89,11 +72,6 @@ public class SearchActivity extends AppCompatActivity {
         /*arrayList = new ArrayList<QnA>();
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_singlechoice, arrayList);
         listView.setAdapter(adapter);*/
-
-        //final List<QnA> qna = new ArrayList<>();
-
-//        for(int i = 0; i<readcount; i++)
-//            qna.add(new QnA(question[i], answer[i], null));
 
         final ListAdapter listAdapter = new ListAdapter(this, qna, listView);
 
@@ -120,10 +98,6 @@ public class SearchActivity extends AppCompatActivity {
                 final EditText et_answer = (EditText)dialogView.findViewById(R.id.dg_et_answer);
                 AlertDialog.Builder ad = new AlertDialog.Builder(SearchActivity.this);
                 ad.setView(dialogView);
-                //ad.setIcon(R.mipmap.ic_launcher);
-                //ad.setTitle("문제를 입력하세요");
-
-                //ad.setMessage("문제를 입력하세요2");
 
                 ad.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
@@ -150,28 +124,6 @@ public class SearchActivity extends AppCompatActivity {
                             {
                                 e.printStackTrace();
                             }
-//                            String filename = "QnA.txt";
-//                            File file = new File(getFilesDir(), filename);
-//                            FileWriter fw = null;
-//                            BufferedWriter bufwr = null;
-//
-//                            try
-//                            {
-//                                fw = new FileWriter(file, true);
-//                                bufwr = new BufferedWriter(fw);
-//                                bufwr.write(str1);
-//                                bufwr.newLine();
-//                                bufwr.write(str2);
-//                                bufwr.newLine();
-//
-//                                if(bufwr != null)
-//                                    bufwr.close();
-//                                if(fw != null)
-//                                    fw.close();
-//                            } catch(Exception e)
-//                            {
-//                                e.printStackTrace();
-//                            }
 
                             readcount++;
                             File init_file = new File(getFilesDir(), "DataCount.txt");
@@ -210,39 +162,20 @@ public class SearchActivity extends AppCompatActivity {
 //                    listView.clearChoices();
 //                    listAdapter.notifyDataSetChanged();
 //                }
-//                File init_file = new File(getFilesDir(), "DataCount.txt");
-//                File data_file = new File(getFilesDir(), "QnA.txt");
-//
-//                if(data_file.exists())
-//                {
-//                    data_file.delete();
-//                }
-//
-//                if(init_file.exists())
-//                {
-//                    init_file.delete();
-//                }
-//                qna.clear();
-                qna.clear();
+                File init_file = new File(getFilesDir(), "DataCount.txt");
+                File data_file = new File(getFilesDir(), "QnA.txt");
 
-
-                FileInputStream fis = null;
-                ObjectInputStream ois = null;
-                File file = new File(getFilesDir(), "QnA.txt");
-                ArrayList qna2;
-
-                try
+                if(data_file.exists())
                 {
-                    fis = new FileInputStream(file);
-                    ois = new ObjectInputStream(fis);
-                    qna = (ArrayList)ois.readObject();
-                    //qna = readedObject;
-                    ois.close();
-                    fis.close();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
+                    data_file.delete();
                 }
+
+                if(init_file.exists())
+                {
+                    init_file.delete();
+                }
+                qna.clear();
+                readcount = 0;
             }
         });
     }
