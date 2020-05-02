@@ -9,12 +9,12 @@ public class QnA implements Serializable {
     private String answer;
     private CheckBox checkBox;
 
-    public CheckBox getCheckBox() {
-        return checkBox;
+    public Boolean getCheckBox() {
+        return checkBox.isChecked();
     }
 
-    public void setCheckBox(CheckBox checkBox) {
-        this.checkBox = checkBox;
+    public void setCheckBox(Boolean bool) {
+        checkBox.setChecked(bool);
     }
 
     public QnA(String question, String answer, CheckBox checkBox) {

@@ -79,14 +79,8 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_main_input"
-            android:text="입력"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-        <Button
             android:id="@+id/btn_main_search"
-            android:text="조회"
+            android:text="단어장 관리"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>

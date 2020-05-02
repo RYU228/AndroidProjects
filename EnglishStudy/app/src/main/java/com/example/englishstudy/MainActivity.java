@@ -90,18 +90,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btn_main_input = (Button)findViewById(R.id.btn_main_input);
-
-        btn_main_input.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                intent = new Intent(MainActivity.this, InputDataActivity.class);
-                //intent.putExtra("question")
-                startActivityForResult(intent, REQUEST_INTENT);
-            }
-        });
-
-
         //조회 버튼
         btn_main_search = (Button)findViewById(R.id.btn_main_search);
 
@@ -149,9 +137,6 @@ public class MainActivity extends AppCompatActivity {
             qna.clear();
             qna = (ArrayList<QnA>)data.getSerializableExtra("QnA2");
             readcount = data.getIntExtra("readcount1", 1);
-
-            String temp = Integer.toString(readcount);
-            btn_main_next.setText(temp);
         }
     }
 

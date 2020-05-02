@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +32,7 @@ public class SearchActivity extends AppCompatActivity {
     private int readcount;
     private String question[];
     private String answer[];
-    private Button btn_input, btn_change, btn_delete;
+    private Button btn_input, btn_delete;
     private ArrayList<QnA> qna;
 
     @Override
@@ -76,7 +78,6 @@ public class SearchActivity extends AppCompatActivity {
         final ListAdapter listAdapter = new ListAdapter(this, qna, listView);
 
         listView.setAdapter(listAdapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -111,19 +112,7 @@ public class SearchActivity extends AppCompatActivity {
                             qna.add(new QnA(str1, str2, null));
                             listAdapter.notifyDataSetChanged();
 
-                            try
-                            {
-                                String filename = "QnA.txt";
-                                File file = new File(getFilesDir(), filename);
-                                FileOutputStream fos = new FileOutputStream(file);
-                                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                                oos.writeObject(qna);
-                                oos.close();
-                                fos.close();
-                            } catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
+                            DataWrite();
 
                             readcount++;
                             File init_file = new File(getFilesDir(), "DataCount.txt");
@@ -155,27 +144,33 @@ public class SearchActivity extends AppCompatActivity {
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                int pos = listView.getCheckedItemPosition();
-//                if(pos != ListView.INVALID_POSITION)
-//                {
-//                    qna.remove(pos);
-//                    listView.clearChoices();
-//                    listAdapter.notifyDataSetChanged();
-//                }
-                File init_file = new File(getFilesDir(), "DataCount.txt");
+                SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
+                int count = listAdapter.getCount() ;
+
+                for (int i = count-1; i >= 0; i--) {
+                    if (checkedItems.get(i)) {
+                        qna.remove(i) ;
+                    }
+                }
+
                 File data_file = new File(getFilesDir(), "QnA.txt");
 
                 if(data_file.exists())
                 {
                     data_file.delete();
+                    DataWrite();
                 }
 
+                readcount = qna.size();
+                File init_file = new File(getFilesDir(), "DataCount.txt");
                 if(init_file.exists())
                 {
                     init_file.delete();
+                    CountWrite();
                 }
-                qna.clear();
-                readcount = 0;
+                // 모든 선택 상태 초기화.
+                listView.clearChoices() ;
+                listAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -198,6 +193,23 @@ public class SearchActivity extends AppCompatActivity {
 
             if(bufwr != null) bufwr.close();
             if(fw != null) fw.close();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void DataWrite()
+    {
+        try
+        {
+            String filename = "QnA.txt";
+            File file = new File(getFilesDir(), filename);
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(qna);
+            oos.close();
+            fos.close();
         } catch (Exception e)
         {
             e.printStackTrace();

@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -71,11 +72,11 @@ public class ListAdapter extends ArrayAdapter<QnA> {
         int idx = Tag.indexOf("@");
         String tag = Tag.substring(idx+1);
 
-        QnA qna = (QnA)mList.get(position);
+        final QnA qna = (QnA)mList.get(position);
 
         viewHolder.question.setText(qna.getQuestion());
         viewHolder.answer.setText(qna.getAnswer());
-        //viewHolder.checkBox.setText(qna.getCheckBox());
+        viewHolder.checkBox.setChecked(false);
 
         return rowView;
     }
